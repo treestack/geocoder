@@ -2,17 +2,22 @@ mod config;
 mod errors;
 mod handlers;
 
+use axum::routing::get;
+use axum::{BoxError, Router};
 use dotenvy::dotenv;
 use once_cell::sync::OnceCell;
-use salvo::logging::Logger;
-use salvo::prelude::*;
-use salvo::rate_limiter::{BasicQuota, FixedGuard, MemoryStore, RateLimiter, RemoteIpIssuer};
 use std::env;
-use salvo::CatcherImpl;
+use std::net::SocketAddr;
+use axum::error_handling::HandleErrorLayer;
+use tower::ServiceBuilder;
+use tower_governor::errors::display_error;
+use tower_governor::governor::GovernorConfigBuilder;
+use tower_governor::GovernorLayer;
+use tower_http::trace::TraceLayer;
 
 use crate::config::Configuration;
 use crate::errors::Error;
-use geocoder::{ReverseGeocoder};
+use geocoder::ReverseGeocoder;
 
 static GEOCODER: OnceCell<ReverseGeocoder> = OnceCell::new();
 
@@ -41,24 +46,31 @@ async fn main() {
     tracing::info!("Loading city data and populating tree");
     GEOCODER.set(ReverseGeocoder::new(&config.data_file)).ok();
 
-    // Configure routing
-    let router = Router::new()
-        .hoop(Logger {})
-        .hoop(CachingHeaders::new())
-        .hoop(RateLimiter::new(
-            FixedGuard::new(),
-            MemoryStore::new(),
-            RemoteIpIssuer,
-            BasicQuota::per_second(1),
-        ))
-        .get(handlers::geocode);
+    // Rate limiter
+    let governor_conf = Box::new(
+        GovernorConfigBuilder::default()
+            .per_millisecond(300)
+            .burst_size(10)
+            .finish()
+            .unwrap(),
+    );
 
-    let service = Service::new(router)
-        .with_catchers(Vec::new());
+    // Configure routes
+    let app = Router::new()
+        .route("/", get(handlers::geocode))
+        .layer(TraceLayer::new_for_http())
+        .layer(
+            ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|e: BoxError| async move { display_error(e) }))
+                .layer(GovernorLayer {
+                    config: Box::leak(governor_conf),
+                }),
+        );
 
     // Start the server
     tracing::info!("Listening on {}", &config.bind_address);
-    Server::new(TcpListener::bind(&config.bind_address))
-        .serve(service)
-        .await;
+    axum::Server::bind(&config.bind_address)
+        .serve(app.into_make_service_with_connect_info::<SocketAddr>())
+        .await
+        .unwrap();
 }

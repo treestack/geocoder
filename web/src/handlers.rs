@@ -1,16 +1,20 @@
-use geojson::{Feature, GeoJson, Geometry, JsonObject, JsonValue, Value};
-use salvo::prelude::Json;
-use salvo::{handler, Request};
+use crate::errors::Error::{CityNotFound, NotOnEarth};
+use crate::{Result, GEOCODER};
+use axum::extract::Query;
+use axum::Json;
 use geocoder::City;
-use crate::errors::Error::{CityNotFound, MissingParameter, NotOnEarth};
-use crate::{GEOCODER, Result};
+use geojson::{Feature, GeoJson, Geometry, JsonObject, JsonValue, Value};
+use serde::Deserialize;
 
-#[handler]
-pub async fn geocode(req: &mut Request) -> Result<Json<GeoJson>> {
-    let lat = req.query::<f32>("lat").ok_or(MissingParameter("lat"))?;
-    let lng = req.query::<f32>("lng").ok_or(MissingParameter("lng"))?;
+#[derive(Deserialize)]
+pub struct GeocodeParameters {
+    lat: f32,
+    lng: f32,
+}
 
+pub async fn geocode(Query(pos): Query<GeocodeParameters>) -> Result<Json<GeoJson>> {
     let gc = GEOCODER.get().unwrap();
+    let GeocodeParameters { lat, lng } = pos;
 
     let (d, idx) = gc.search(&lat, &lng).ok_or(NotOnEarth(lat, lng))?;
     let city = gc

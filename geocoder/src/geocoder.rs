@@ -51,7 +51,6 @@ pub struct Handle {
 
 impl Handle {
     pub(crate) fn new(csv_path: &str) -> Handle {
-
         let cities: Vec<City> = parse_csv_file(csv_path).expect("panic!");
         let mut tree: KdTree<f32, usize, 3, 32, u16> = KdTree::with_capacity(cities.len());
 
@@ -60,17 +59,14 @@ impl Handle {
         });
         tracing::info!("Populated tree with {} cities", cities.len());
 
-        Self {
-            cities,
-            tree
-        }
+        Self { cities, tree }
     }
 }
 
 impl ReverseGeocoder {
     pub fn new(csv_path: &str) -> ReverseGeocoder {
         Self {
-            handle: Arc::new(Handle::new(csv_path))
+            handle: Arc::new(Handle::new(csv_path)),
         }
     }
 }
@@ -121,8 +117,8 @@ pub fn unit_sphere_squared_euclidean_to_metres(sq_euc_dist: f32) -> f32 {
 
 #[cfg(test)]
 mod tests {
-    use tracing_test::traced_test;
     use super::*;
+    use tracing_test::traced_test;
 
     #[test]
     #[traced_test]
