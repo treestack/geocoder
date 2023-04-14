@@ -3,7 +3,7 @@ use crate::{Result, GEOCODER};
 use axum::extract::Query;
 use axum::Json;
 use geocoder::City;
-use geojson::{Feature, GeoJson, Geometry, JsonObject, JsonValue, Value};
+use geojson::{Feature, GeoJson, Geometry, JsonObject, Value};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -20,28 +20,31 @@ pub async fn geocode(Query(pos): Query<GeocodeParameters>) -> Result<Json<GeoJso
     let city = gc
         .get_city(idx)
         .ok_or(CityNotFound(idx))
-        .map(|c| to_feature(c, d))?;
+        .map(|c| to_feature(idx, c, d))?;
 
     Ok(Json(city))
 }
 
-fn to_feature(city: &City, distance: f32) -> GeoJson {
+fn to_feature(idx: usize, city: &City, distance: f32) -> GeoJson {
     let city = city.clone();
 
     let point = Value::Point(vec![city.lng as f64, city.lat as f64]);
 
     let mut properties = JsonObject::new();
-    properties.insert(String::from("name"), JsonValue::from(city.name));
-    properties.insert(String::from("admin1"), JsonValue::from(city.admin1));
-    properties.insert(String::from("admin2"), JsonValue::from(city.admin2));
-    properties.insert(String::from("country"), JsonValue::from(city.country));
-    properties.insert(String::from("distanceToQuery"), JsonValue::from(distance));
+    properties.insert(String::from("admin1"), city.admin1.into());
+    properties.insert(String::from("admin2"), city.admin2.into());
+    properties.insert(String::from("country"), city.country.into());
+    properties.insert(String::from("distanceToQuery"), distance.into());
+
+    let mut foreign_members = JsonObject::new();
+    foreign_members.insert(String::from("name"), city.name.into());
+    foreign_members.insert(String::from("id"), idx.into());
 
     GeoJson::Feature(Feature {
         bbox: None,
         geometry: Some(Geometry::new(point)),
         id: None,
         properties: Some(properties),
-        foreign_members: None,
+        foreign_members: Some(foreign_members),
     })
 }
