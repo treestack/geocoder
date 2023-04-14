@@ -7,7 +7,7 @@ edition = "2021"
 geocoder = { path = "../geocoder" }
 axum = { version = "0.6"}
 tokio = { version = "1", features = ["full"] }
-tower = { version = "0.4", features = ["limit"] }
+tower = { version = "0.4" }
 tower-http = { version = "0.4", features = ["trace"] }
 tower_governor = "0.0.4"
 serde = "1.0"
