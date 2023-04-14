@@ -1,0 +1,16 @@
+[package]
+name = "web"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+geocoder = { path = "../geocoder" }
+salvo = { version = "0.37", features = ["logging", "caching-headers", "rate-limiter"] }
+tokio = { version = "1", features = ["macros"] }
+serde = "1.0"
+thiserror = "1.0"
+once_cell = "1.17"
+geojson = "0.24"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["json"] }
+dotenvy = "0.15"
