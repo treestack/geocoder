@@ -1,25 +1,11 @@
 use std::fmt::{Display, Formatter};
 use std::fs::File;
-use std::sync::Arc;
 
 use csv::Reader;
 use kiddo::float::{distance::squared_euclidean, kdtree::KdTree};
 use serde::Deserialize;
 
 const EARTH_RADIUS_IN_M: f32 = 6371000.0;
-
-#[derive(Debug)]
-pub struct ReverseGeocoder {
-    handle: Arc<Handle>,
-}
-
-impl Clone for ReverseGeocoder {
-    fn clone(&self) -> Self {
-        Self {
-            handle: self.handle.clone(),
-        }
-    }
-}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct City {
@@ -44,16 +30,14 @@ impl Display for City {
 }
 
 #[derive(Debug)]
-pub struct Handle {
+pub struct ReverseGeocoder {
     cities: Vec<City>,
     tree: KdTree<f32, usize, 3, 32, u16>,
 }
 
-impl Handle {
-    pub(crate) fn new(csv_path: &str) -> Handle {
-        let cities: Vec<City> = parse_csv_file(csv_path).expect("panic!");
+impl ReverseGeocoder {
+    pub fn new(cities: Vec<City>) -> ReverseGeocoder {
         let mut tree: KdTree<f32, usize, 3, 32, u16> = KdTree::with_capacity(cities.len());
-
         cities.iter().enumerate().for_each(|(idx, city)| {
             tree.add(&city.as_xyz(), idx);
         });
@@ -61,27 +45,22 @@ impl Handle {
 
         Self { cities, tree }
     }
-}
 
-impl ReverseGeocoder {
-    pub fn new(csv_path: &str) -> ReverseGeocoder {
-        Self {
-            handle: Arc::new(Handle::new(csv_path)),
-        }
+    pub fn from_file(csv_path: &str) -> ReverseGeocoder {
+        let cities: Vec<City> = parse_csv_file(csv_path).expect("panic!");
+        Self::new(cities)
     }
-}
 
-impl ReverseGeocoder {
     pub fn search(&self, lat: &f32, lng: &f32) -> Option<(f32, usize)> {
         tracing::debug!("Searching for city closest to {};{}", lat, lng);
 
         let query = degrees_lat_lng_to_unit_sphere(lat, lng);
-        let (d, nearest_idx) = self.handle.tree.nearest_one(&query, &squared_euclidean);
+        let (d, nearest_idx) = self.tree.nearest_one(&query, &squared_euclidean);
         tracing::debug!("idx {} with distance {}", nearest_idx, d);
 
         let result = match nearest_idx {
             0 => None,
-            i => Some((unit_sphere_squared_euclidean_to_metres(d), i)),
+            i => Some((round(unit_sphere_squared_euclidean_to_metres(d), 2), i)),
         };
         tracing::debug!("Found: {:?}", result);
 
@@ -89,7 +68,7 @@ impl ReverseGeocoder {
     }
 
     pub fn get_city(&self, index: usize) -> Option<&City> {
-        self.handle.cities.get(index)
+        self.cities.get(index)
     }
 }
 
@@ -115,6 +94,11 @@ pub fn unit_sphere_squared_euclidean_to_metres(sq_euc_dist: f32) -> f32 {
     sq_euc_dist.sqrt() * EARTH_RADIUS_IN_M
 }
 
+fn round(x: f32, decimals: u32) -> f32 {
+    let y = 10i32.pow(decimals) as f32;
+    (x * y).round() / y
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -122,12 +106,20 @@ mod tests {
 
     #[test]
     #[traced_test]
+    fn doesnt_find_anything_if_list_is_empty() {
+        let gc = ReverseGeocoder::new(vec![]);
+        let result = gc.search(&50.93, &6.95);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    #[traced_test]
     fn finds_cologne() {
-        let gc = ReverseGeocoder::new("../cities.csv");
+        let gc = ReverseGeocoder::from_file("../cities.csv");
         let (d, i) = gc.search(&50.93, &6.95).unwrap();
         let city = gc.get_city(i).unwrap();
         assert_eq!(i, 34938);
-        assert_eq!(d, 370.00305);
-        assert_eq!(city.name, "Koeln")
+        assert_eq!(d, 370.24);
+        assert_eq!(format!("{}", city), "Koeln, DE")
     }
 }

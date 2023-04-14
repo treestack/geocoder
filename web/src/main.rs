@@ -44,7 +44,7 @@ async fn main() {
 
     // Boot geocoder
     tracing::info!("Loading city data and populating tree");
-    GEOCODER.set(ReverseGeocoder::new(&config.data_file)).ok();
+    GEOCODER.set(ReverseGeocoder::from_file(&config.data_file)).ok();
 
     // Rate limiter
     let governor_conf = Box::new(
