@@ -31,7 +31,7 @@ impl Default for Configuration {
         Self {
             loglevel: Level::INFO,
             bind_address: SocketAddr::from(([127, 0, 0, 1], 5353)),
-            data_file: String::from("./cities.csv"),
+            data_file: String::from("./cities500.txt"),
         }
     }
 }

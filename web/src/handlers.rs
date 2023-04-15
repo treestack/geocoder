@@ -1,4 +1,3 @@
-use crate::errors::Error::{CityNotFound, NotOnEarth};
 use crate::{Result, GEOCODER};
 use axum::extract::Query;
 use axum::Json;
@@ -10,35 +9,50 @@ use serde::Deserialize;
 pub struct GeocodeParameters {
     lat: f32,
     lng: f32,
+    details: Option<bool>,
+    results: Option<usize>,
 }
 
-pub async fn geocode(Query(pos): Query<GeocodeParameters>) -> Result<Json<GeoJson>> {
+pub async fn geocode(Query(pos): Query<GeocodeParameters>) -> Result<Json<Vec<GeoJson>>> {
     let gc = GEOCODER.get().unwrap();
-    let GeocodeParameters { lat, lng } = pos;
+    let GeocodeParameters { lat, lng, details, results } = pos;
 
-    let (d, idx) = gc.search(&lat, &lng).ok_or(NotOnEarth(lat, lng))?;
-    let city = gc
-        .get_city(idx)
-        .ok_or(CityNotFound(idx))
-        .map(|c| to_feature(idx, c, d))?;
+    let results= gc.search(&lat, &lng, &results.unwrap_or(1));
 
-    Ok(Json(city))
+    let response = results.iter()
+        .flat_map(|(d, idx)| gc.get_city(*idx).map(|c| (d, c)))
+        .map(|(d, c)| to_feature(&c, *d, details.unwrap_or(false)))
+        .collect();
+
+    Ok(Json(response))
 }
 
-fn to_feature(idx: usize, city: &City, distance: f32) -> GeoJson {
+fn to_feature(city: &City, distance: u32, include_details: bool) -> GeoJson {
     let city = city.clone();
 
-    let point = Value::Point(vec![city.lng as f64, city.lat as f64]);
+    let point = Value::Point(vec![city.longitude as f64, city.latitude as f64]);
 
     let mut properties = JsonObject::new();
-    properties.insert(String::from("admin1"), city.admin1.into());
-    properties.insert(String::from("admin2"), city.admin2.into());
-    properties.insert(String::from("country"), city.country.into());
     properties.insert(String::from("distanceToQuery"), distance.into());
+    
+    if include_details {
+        properties.insert(String::from("featureCode"), city.feature_code.into());
+        properties.insert(String::from("countryCode"), city.country_code.into());
+        properties.insert(String::from("cc2"), city.cc2.into());
+        properties.insert(String::from("admin1Code"), city.admin1_code.into());
+        properties.insert(String::from("admin2Code"), city.admin2_code.into());
+        properties.insert(String::from("admin3Code"), city.admin3_code.into());
+        properties.insert(String::from("admin4Code"), city.admin4_code.into());
+        properties.insert(String::from("population"), city.population.into());
+        properties.insert(String::from("elevation"), city.elevation.into());
+        properties.insert(String::from("dem"), city.dem.into());
+        properties.insert(String::from("timezone"), city.timezone.into());
+        properties.insert(String::from("modificationDate"), city.modification_date.into());
+    }
 
     let mut foreign_members = JsonObject::new();
     foreign_members.insert(String::from("name"), city.name.into());
-    foreign_members.insert(String::from("id"), idx.into());
+    foreign_members.insert(String::from("id"), city.id.into());
 
     GeoJson::Feature(Feature {
         bbox: None,
