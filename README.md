@@ -1,7 +1,18 @@
 # Reverse Geocoder
 
-Simple, lightweight reverse geocoder. Ignores boundaries and just returns the closest (known) city for the given 
-coordinates.
+Simple, lightweight reverse geocoder. Final Docker image is around 40 MB including data (subject to change). 
+Ignores boundaries and just returns the closest (known) city (including timezone and population data) for the given 
+coordinates. 
+
+## Performance
+
+With geonames' full dataset of ~200.000 cities, response time is fairly fast (measured on a M1 mac): 
+
+    $ hyperfine --warmup 3 'curl "http://localhost:5353?lat=-48.875486&lng=-123.392519&results=1&details=true"'
+
+    Benchmark 1: curl "http://localhost:5353?lat=-48.875486&lng=-123.392519&results=1&details=true"
+    Time (mean ± σ):       9.0 ms ±   2.5 ms    [User: 1.8 ms, System: 2.5 ms]
+    Range (min … max):     6.0 ms …  20.4 ms    330 runs
 
 ## Configuration
 
