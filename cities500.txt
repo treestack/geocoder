@@ -1,0 +1,26 @@
+3038999	Soldeu	Soldeu		42.57688	1.66769	P	PPL	AD		02				602		1832	Europe/Andorra	2017-11-06
+2852566	Porz am Rhein	Porz am Rhein	Koeln-Porz,Köln-Porz,Porz,Porz am Rhein	50.88637	7.0583	P	PPLX	DE		07	053	05315	05315000	113415		54	Europe/Berlin	2022-08-04
+2862423	Nikolassee	Nikolassee	Berlin-Nikolassee,Nicolassee,Nikolassee,Nikolasze,Николасзе	52.4344	13.20095	P	PPLX	DE		16	00	11000	11000000	11642		42	Europe/Berlin	2022-08-04
+2886242	Köln	Koeln	Augusta Ubiorum,CGN,Cologna,Cologne,Colonha,Colonia,Colonia Agrippina,Colonia Agrippinensis,Colonia Claudia Ara Agrippinensium,Colònia,Colônia,Cołogna,Culonia,Cwlen,K'oln,Kel'n,Keln,Kelnas,Kelne,Kelni,Keulen,Kiolns,Kjol'n,Koelle,Koeln,Kol'n,Kolin nad Rynem,Kolin nad Rynom,Koloin,Kolon,Kolonia,Kolonjo,Kolín nad Rýnem,Kolín nad Rýnom,Kyoln,Këlni,Kölle,Köln,Lungsod ng Cologne,Oppidum Ubiorum,gu long,kalana,kalon,ke long,kerun,kholoy,kln,klwn,koelleun,koln,kolon,kwln,kwlwn,kwlwnya,kyolna,qln,qlwnyt,quluniat,Ķelne,Κολωνία,Келн,Кельн,Кьолн,Кёльн,Кӧльн,Көлн,Քյոլն,קלן,קעלן,قلونية,قُلُونِيَة,كولن,كولونيا,کلن,کلون,کولون,क्योल्न,ਕਲਨ,கோல்ன்,కొలోన్,ಕಲೋನ್,โคโลญ,კელნი,ኮልን,ケルン,古龍,科隆,쾰른	50.93333	6.95	P	PPLA2	DE		07	053	05315	05315000	963395		58	Europe/Berlin	2020-11-12
+2890136	Kladow	Kladow	Berlin-Kladow,Cladow	52.45423	13.14445	P	PPLX	DE		16	00	11000	11000000	16368		50	Europe/Berlin	2022-08-05
+2908365	Hedwigenkoog	Hedwigenkoog		54.18333	8.85	P	PPLA4	DE		10	00	01051	01051043	267		0	Europe/Berlin	2011-04-25
+2908373	Hedersleben	Hedersleben		51.85943	11.25	P	PPLA4	DE		14	00	15085	15085160	1757		106	Europe/Berlin	2011-07-31
+2908374	Hedersleben	Hedersleben	Hedersleben,Hedersleben (Eisleben),Hedersleben (Mansfelder Land),Khedersleben (Mansfel'd),Khedersleben (Mansfeld-Zidkharc),Хедерслебен (Мансфелд-Зидхарц),Хедерслебен (Мансфельд)	51.54891	11.64983	P	PPL	DE		14	00	15087	15087130	1003		178	Europe/Berlin	2014-12-24
+2908379	Hedeper	Hedeper		52.06667	10.68333	P	PPLA4	DE		06	00	03158	03158017	588		115	Europe/Berlin	2011-04-25
+2908398	Heddesheim	Heddesheim	Geddesgajm,Heddesheim,Kheddeskhajm,Khedeskhajm,heddesuhaimu,hei de si hai mu,Геддесгайм,Хеддесхайм,Хедесхајм,ヘッデスハイム,黑德斯海姆	49.50556	8.60361	P	PPLA4	DE		01	082	08226	08226028	11544		102	Europe/Berlin	2011-04-25
+3225108	Ransbach-Baumbach	Ransbach-Baumbach	Ransbach-Baumbach,Ransbakh-Baumbakh,lan si ba-bo yin ba,ransbakh-bawmbakh,ransubahha=baumubahha,ranzbakh-bawmbakh,Рансбах-Баумбах,رانزباخ-باومباخ,رانسباخ-باومباخ,ランスバッハ＝バウムバッハ,兰斯巴-博因巴	50.46496	7.7283	P	PPL	DE		08	00	07143	07143062	7327		305	Europe/Berlin	2015-09-04
+798536	Rabocheostrovsk	Rabocheostrovsk	Kem Harbour,Papinsaari,Papinsuari,Papinšuari,Popov,Rabocheostrovs'k,Rabocheostrovsk,Rabocʻeostrovsk,Rabotseostrovsk,Rabotšeostrovsk,Vallankumoussaari,Рабочеостровск,Рабочеостровськ,Ռաբոչեոստրովսկ	64.98507	34.77587	P	PPL	RU		28				2900		1	Europe/Moscow	2021-01-07
+799386	Lutkun	Lutkun	Lutkun,Луткун	41.48084	47.68578	P	PPL	RU		17				3264		1121	Europe/Moscow	2012-01-19
+801983	Druzhba	Druzhba	Druzhba,Дружба	42.242	48.00145	P	PPL	RU		17				3621		67	Europe/Moscow	2019-05-09
+802000	Gerga	Gerga	Gerga,Герга	42.34645	47.96333	P	PPL	RU		17				3778		31	Europe/Moscow	2012-01-19
+802037	Imeni Chkalova	Imeni Chkalova	Chkalova,Chkalovskij,Чкаловский	47.28139	39.74889	P	PPLA4	RU		61				0		71	Europe/Moscow	2009-12-16
+802078	Alagir	Alagir	Alagir,Alagiras,Alaguir,Ałagir,a la ji er,alaghyr,alagir,alagira,alagyr,allagileu,Алагир,Алагир балһсн,Алагір,Ալագիր,آلاگیر,ألاغير,الاگیر,ਅਲਾਗਿਰ,阿拉吉尔,알라기르	43.04222	44.22222	P	PPLA2	RU		68				19665		611	Europe/Moscow	2019-09-05
+802473	Yuzhnyy	Yuzhnyy	Yuzhnyy	45.0025	40.47472	P	PPL	RU		38				4504		123	Europe/Moscow	2018-12-05
+802629	Kovalevskoye	Kovalevskoye	Kovalevskoe,Kovalevskoje,Kovalevskoye,Ковалевское	45.19417	40.97611	P	PPL	RU		38				3139		142	Europe/Moscow	2012-01-19
+802714	Persianovka	Persianovka	Persianovka,Persianovskij,Persianovskiy,Персиановка,Персиановский	47.52972	39.41833	P	PPL	RU		61				15730		26	Europe/Moscow	2012-01-19
+802754	Karamakhi	Karamakhi	Kara-Makhi,Karamakhi,Кара-Махи,Карамахи	42.61934	47.26017	P	PPL	RU		17				3904		1075	Europe/Moscow	2012-01-19
+802799	Alkhan-Churt	Alkhan-Churt	Alhan-Curt,Alhan-Čurt,Alkhan-Churt,Alkhan-Churtskij,Alkhan-Tsjurt,Alxan-Curtskii,Alxan-Çurtskii,Алхан-Чурт,Алхан-Чуртский	43.35194	44.78694	P	PPL	RU		19				7666		546	Europe/Moscow	2014-04-06
+802921	Novyy Khushet	Novyy Khushet	Novyj Khushet,Novyj Khusjet,Novyy Khushet,Новый Хушет	42.89941	47.5604	P	PPL	RU		17				7912		4	Europe/Moscow	2012-01-19
+803021	Khambi-Irze	Khambi-Irze	Hambi-Irze,Kha'mbin-Irze,Khadis-Jurt,Khadis-Yurt,Khambi-Irze,Khambi-Irzi,Lermontov-Jurt,Lermontov-Yurt,Xambi-Irzi,Xambin-Irze,Xämbin-Irze,Лермонтов-Юрт,Хадис-Юрт,Хамби-Ирзе,Хамби-Ирзи,Хаьмбин-Ирзе	43.23502	45.45302	P	PPL	RU		12				3130		173	Europe/Moscow	2019-08-08
+803494	Orël-Izumrud	Orel-Izumrud	Orel-Izumrud,Orjol-Izumrud,Orël-Izumrud,Орёл-Изумруд	43.46005	39.92377	P	PPL	RU		38				4614		14	Europe/Moscow	2013-01-11
+1106542	Chitungwiza	Chitungwiza	Chitungviza,Chitungwiza,Chytungviza,Citungviza,chytwngwyza,Čitungviza,Читунгвиза,Читунгвіза,Чытунгвіза,چیتونگویزا	-18.01274	31.07555	P	PPL	ZW		10				371244		1435	Africa/Harare	2022-10-05
