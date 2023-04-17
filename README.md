@@ -6,7 +6,7 @@ coordinates.
 
 ## Performance
 
-With geonames' full dataset of ~200.000 cities, response time is fairly fast (measured on a M1 mac): 
+With geonames' full dataset of ~200.000 cities, response time is fairly fast (measured on a M1 mac, application running in a Docker container): 
 
     $ hyperfine --warmup 3 'curl "http://localhost:5353?lat=-48.875486&lng=-123.392519&results=1&details=true"'
 
@@ -15,6 +15,8 @@ With geonames' full dataset of ~200.000 cities, response time is fairly fast (me
     Range (min … max):     6.0 ms …  20.4 ms    330 runs
 
 ## Configuration
+
+You can configure the application with the following environment variables:
 
 | Parameter    | Description    | Default         |
 |--------------|----------------|-----------------|
@@ -50,7 +52,7 @@ Download here: http://download.geonames.org/export/dump/cities500.zip and replac
 
 The response is valid GeoJSON, `id` and `name` are added as [foreign members](https://www.rfc-editor.org/rfc/rfc7946#section-6.1). The additional properties always includes the distance to the given coordinates and optionally most columns from the geonames dataset:
 
-| Property         | Description                                            
+| Property         | Description                                                                                   |  
 |------------------|-----------------------------------------------------------------------------------------------|
 | distanceToQuery  | Approx. distance to given coordinates in meters (assuming earth radius of exactly 6371 km).   |
 | admin1Code       |                                                                                               |

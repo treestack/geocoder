@@ -20,7 +20,6 @@ pub async fn geocode(Query(pos): Query<GeocodeParameters>) -> Result<Json<Vec<Ge
     let results= gc.search(&lat, &lng, &results.unwrap_or(1));
 
     let response = results.iter()
-        .flat_map(|(d, idx)| gc.get_city(*idx).map(|c| (d, c)))
         .map(|(d, c)| to_feature(&c, *d, details.unwrap_or(false)))
         .collect();
 
