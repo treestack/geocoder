@@ -31,8 +31,8 @@ const EARTH_RADIUS_IN_M: f32 = 6371000.0;
 ///     elevation: Some(42),
 ///     dem: String::from(""),
 ///     timezone: String::from("Europe/Berlin"),
-///     modification_date: String::from("2022-08-04")
-/// }
+///     modification_date: String::from("2022-08-04"),
+/// };
 /// ```
 #[derive(Debug, Clone, Deserialize)]
 pub struct City {
