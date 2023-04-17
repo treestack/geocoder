@@ -1,7 +1,7 @@
 # Reverse Geocoder
 
 Simple, lightweight reverse geocoder. Final Docker image is around 40 MB including data (subject to change). 
-Ignores boundaries and just returns the closest (known) city (including timezone and population data) for the given 
+Ignores boundaries and just returns the closest known city, including timezone and population data for the given 
 coordinates. 
 
 ## Performance
