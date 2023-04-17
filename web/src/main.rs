@@ -2,13 +2,14 @@ mod config;
 mod errors;
 mod handlers;
 
+use axum::error_handling::HandleErrorLayer;
 use axum::routing::get;
 use axum::{BoxError, Router};
 use dotenvy::dotenv;
 use once_cell::sync::OnceCell;
 use std::env;
 use std::net::SocketAddr;
-use axum::error_handling::HandleErrorLayer;
+use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::errors::display_error;
 use tower_governor::governor::GovernorConfigBuilder;
@@ -44,7 +45,9 @@ async fn main() {
 
     // Boot geocoder
     tracing::info!("Loading city data and populating tree");
-    GEOCODER.set(ReverseGeocoder::from_file(&config.data_file)).ok();
+    GEOCODER
+        .set(ReverseGeocoder::from_file(&config.data_file))
+        .ok();
 
     // Rate limiter
     let governor_conf = Box::new(
@@ -61,7 +64,9 @@ async fn main() {
         .layer(TraceLayer::new_for_http())
         .layer(
             ServiceBuilder::new()
-                .layer(HandleErrorLayer::new(|e: BoxError| async move { display_error(e) }))
+                .layer(HandleErrorLayer::new(|e: BoxError| async move {
+                    display_error(e)
+                }))
                 .layer(GovernorLayer {
                     config: Box::leak(governor_conf),
                 }),
@@ -71,6 +76,36 @@ async fn main() {
     tracing::info!("Listening on {}", &config.bind_address);
     axum::Server::bind(&config.bind_address)
         .serve(app.into_make_service_with_connect_info::<SocketAddr>())
+        .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();
+}
+
+/// Handle shutdown signal
+///
+/// cf. https://github.com/tokio-rs/axum/blob/main/examples/graceful-shutdown/src/main.rs
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+
+    println!("signal received, starting graceful shutdown");
 }
