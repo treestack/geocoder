@@ -46,7 +46,27 @@ Download here: http://download.geonames.org/export/dump/cities500.zip and replac
 | results   | Number of results, integer, defaults to 1               | No       | 10       |
 | details   | Include details in response, boolean, defaults to false | No       | true     |
 
-### Example response
+### Response
+
+The response is valid GeoJSON, `id` and `name` are added as [foreign members](https://www.rfc-editor.org/rfc/rfc7946#section-6.1). The additional properties always includes the distance to the given coordinates and optionally most columns from the geonames dataset:
+
+| Property         | Description                                            
+|------------------|-----------------------------------------------------------------------------------------------|
+| distanceToQuery  | Approx. distance to given coordinates in meters (assuming earth radius of exactly 6371 km).   |
+| admin1Code       |                                                                                               |
+| admin2Code       |                                                                                               |
+| admin3Code       |                                                                                               |
+| admin4Code       |                                                                                               |
+| countryCode      | ISO-3166 2-letter country code                                                                |
+| cc2              | alternative country codes                                                                     |
+| dem              | digital elevation model, srtm3 or gtopo30                                                     |
+| elevation        | elevation in meters                                                                           |
+| featureCode      | Feature code. For a complete list, check [here](http://www.geonames.org/export/codes.html).   |
+| modificationDate | Last modification date                                                                        |
+| population       | Population                                                                                    |
+| timezone         | IANA timezone id                                                                              |
+
+#### Example
 
     [
         {
