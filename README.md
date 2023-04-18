@@ -1,3 +1,5 @@
+[![Docker](https://github.com/treestack/geocoder/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/treestack/geocoder/actions/workflows/docker-publish.yml)
+
 # Reverse Geocoder
 
 Simple, lightweight reverse geocoder. Final Docker image is around 40 MB including data (subject to change). 
