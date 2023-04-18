@@ -6,7 +6,7 @@ use kiddo::float::neighbour::Neighbour;
 use kiddo::float::{distance::squared_euclidean, kdtree::KdTree};
 use serde::Deserialize;
 
-const EARTH_RADIUS_IN_M: f32 = 6371000.0;
+const EARTH_RADIUS_IN_KM: f32 = 6371.0;
 
 /// City structure, as defined in the http://www.geonames.org export.
 ///
@@ -51,13 +51,14 @@ pub struct City {
     pub admin3_code: String,       // code for third level administrative division, varchar(20)
     pub admin4_code: String,       // code for fourth level administrative division, varchar(20)
     pub population: Option<u32>,   // bigint (8 byte int)
-    pub elevation: Option<i16>,    // in meters, integer
-    pub dem: String,               // digital elevation model, srtm3 or gtopo30, average elevation of 3''x3'' (ca 90mx90m) or 30''x30'' (ca 900mx900m) area in meters, integer. srtm processed by cgiar/ciat.
+    pub elevation: Option<i16>,    // in metres, integer
+    pub dem: String,               // digital elevation model, srtm3 or gtopo30, average elevation of 3''x3'' (ca 90mx90m) or 30''x30'' (ca 900mx900m) area in metres, integer. srtm processed by cgiar/ciat.
     pub timezone: String,          // the iana timezone id (see file timeZone.txt) varchar(40)
     pub modification_date: String, // date of last modification in yyyy-MM-dd format
 }
 
 impl City {
+    /// Get coordinates as ECEF (x;y;z)-coordinates.
     pub fn as_xyz(&self) -> [f32; 3] {
         degrees_lat_lng_to_unit_sphere(&self.latitude, &self.longitude)
     }
@@ -113,8 +114,13 @@ impl ReverseGeocoder {
 
     /// Finds the `results` cities nearest to the given coordinates (WGS84, decimal format).
     ///
-    /// Returns a Vec of tuples consisting of the distance in meters to the given coordinates and
+    /// Returns a Vec of tuples consisting of the distance in kilometres to the given coordinates and
     /// the found `City`..
+    ///
+    /// # Arguments
+    /// * `lat` - latitude
+    /// * `lng` - longitude
+    /// * `results` - number of results
     ///
     /// # Example
     /// ```rust
@@ -135,7 +141,7 @@ impl ReverseGeocoder {
             .iter()
             .map(|Neighbour { distance, item }| {
                 (
-                    unit_sphere_squared_euclidean_to_metres(*distance) as u32,
+                    unit_sphere_squared_euclidean_to_kilometres(*distance) as u32,
                     self.cities.get(*item).unwrap(),
                 )
             })
@@ -166,9 +172,9 @@ fn degrees_lat_lng_to_unit_sphere(lat: &f32, lng: &f32) -> [f32; 3] {
     [lat.cos() * lng.cos(), lat.cos() * lng.sin(), lat.sin()]
 }
 
-/// Calculate distance between two ECEF coordinates
-pub fn unit_sphere_squared_euclidean_to_metres(sq_euc_dist: f32) -> f32 {
-    sq_euc_dist.sqrt() * EARTH_RADIUS_IN_M
+/// Convert distance between two ECEF coordinates to kilometres
+pub fn unit_sphere_squared_euclidean_to_kilometres(sq_euc_dist: f32) -> f32 {
+    sq_euc_dist.sqrt() * EARTH_RADIUS_IN_KM
 }
 
 #[cfg(test)]
@@ -188,9 +194,9 @@ mod tests {
     #[traced_test]
     fn finds_cologne() {
         let gc = ReverseGeocoder::from_file("../cities500.txt");
-        let (d, city) = gc.search(&50.93, &6.95, &1).first().unwrap().clone();
+        let (d, city) = gc.search(&50.88, &6.92, &1).first().unwrap().clone();
         assert_eq!(city.id, 2886242);
-        assert_eq!(d, 370);
+        assert_eq!(d, 6);
         assert_eq!(format!("{}", city), "Köln, DE")
     }
 }

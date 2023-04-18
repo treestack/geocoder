@@ -52,21 +52,21 @@ Download here: http://download.geonames.org/export/dump/cities500.zip and replac
 
 The response is valid GeoJSON, `id` and `name` are added as [foreign members](https://www.rfc-editor.org/rfc/rfc7946#section-6.1). The additional properties always includes the distance to the given coordinates and optionally most columns from the geonames dataset:
 
-| Property         | Description                                                                                   |  
-|------------------|-----------------------------------------------------------------------------------------------|
-| distanceToQuery  | Approx. distance to given coordinates in meters (assuming earth radius of exactly 6371 km).   |
-| admin1Code       |                                                                                               |
-| admin2Code       |                                                                                               |
-| admin3Code       |                                                                                               |
-| admin4Code       |                                                                                               |
-| countryCode      | ISO-3166 2-letter country code                                                                |
-| cc2              | alternative country codes                                                                     |
-| dem              | digital elevation model, srtm3 or gtopo30                                                     |
-| elevation        | elevation in meters                                                                           |
-| featureCode      | Feature code. For a complete list, check [here](http://www.geonames.org/export/codes.html).   |
-| modificationDate | Last modification date                                                                        |
-| population       | Population                                                                                    |
-| timezone         | IANA timezone id                                                                              |
+| Property         | Description                                                                                     |  
+|------------------|-------------------------------------------------------------------------------------------------|
+| distanceToQuery  | Approx. distance to given coordinates in kilometres (assuming earth radius of exactly 6371 km). |
+| admin1Code       |                                                                                                 |
+| admin2Code       |                                                                                                 |
+| admin3Code       |                                                                                                 |
+| admin4Code       |                                                                                                 |
+| countryCode      | ISO-3166 2-letter country code                                                                  |
+| cc2              | alternative country codes                                                                       |
+| dem              | digital elevation model, srtm3 or gtopo30                                                       |
+| elevation        | elevation in metres                                                                             |
+| featureCode      | Feature code. For a complete list, check [here](http://www.geonames.org/export/codes.html).     |
+| modificationDate | Last modification date                                                                          |
+| population       | Population                                                                                      |
+| timezone         | IANA timezone id                                                                                |
 
 #### Example
 
@@ -89,7 +89,7 @@ The response is valid GeoJSON, `id` and `name` are added as [foreign members](ht
                 "cc2": "",
                 "countryCode": "ZW",
                 "dem": "1435",
-                "distanceToQuery": 10396437,
+                "distanceToQuery": 10396,
                 "elevation": null,
                 "featureCode": "PPL",
                 "modificationDate": "2022-10-05",
