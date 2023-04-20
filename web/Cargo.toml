@@ -17,3 +17,4 @@ geojson = "0.24"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json"] }
 dotenvy = "0.15"
+notify = "5.1"
