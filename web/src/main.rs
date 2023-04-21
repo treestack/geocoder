@@ -6,14 +6,9 @@ use axum::error_handling::HandleErrorLayer;
 use axum::routing::get;
 use axum::{BoxError, Router};
 use dotenvy::dotenv;
-use once_cell::sync::OnceCell;
 use std::env;
 use std::net::SocketAddr;
-use std::path::Path;
-use notify::{Event, RecursiveMode, Watcher};
-use notify::event::DataChange::Content;
-use notify::event::ModifyKind::Data;
-use notify::EventKind::Modify;
+use std::sync::Arc;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::errors::display_error;
@@ -25,7 +20,9 @@ use crate::config::Configuration;
 use crate::errors::Error;
 use geocoder::ReverseGeocoder;
 
-static GEOCODER: OnceCell<ReverseGeocoder> = OnceCell::new();
+pub struct AppState {
+    geocoder: ReverseGeocoder,
+}
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -50,24 +47,9 @@ async fn main() {
 
     // Boot geocoder
     tracing::info!("Loading city data and populating tree");
-    boot_geocoder(&config.data_file);
-
-    let data_file = config.data_file.clone();
-    let watcher_fn = move |res: notify::Result<Event>| {
-        tracing::debug!("Received watcher event: {:?}", res);
-        match res {
-            Ok(Event { kind: Modify(Data(Content)), .. }) => boot_geocoder(&data_file),
-            _ => ()
-        }
-    };
-
-    let mut watcher = notify::recommended_watcher(watcher_fn)
-        .expect("Unable to initialize watcher");
-
-    match watcher.watch(&Path::new(&config.data_file), RecursiveMode::NonRecursive) {
-        Ok(()) => tracing::info!("Watching data file for changes"),
-        Err(e) => tracing::error!("Unable to watch data file: {}", e)
-    }
+    let shared_state = Arc::new(AppState {
+        geocoder: ReverseGeocoder::from_file(&config.data_file),
+    });
 
     // Rate limiter
     let governor_conf = Box::new(
@@ -81,9 +63,10 @@ async fn main() {
     // Configure routes
     let app = Router::new()
         .route("/", get(handlers::geocode))
-        .layer(TraceLayer::new_for_http())
+        .with_state(shared_state)
         .layer(
             ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
                 .layer(HandleErrorLayer::new(|e: BoxError| async move {
                     display_error(e)
                 }))
@@ -128,10 +111,4 @@ async fn shutdown_signal() {
     }
 
     tracing::warn!("Shutdown signal received, starting graceful shutdown");
-}
-
-fn boot_geocoder(path: &str) {
-    //TODO: Either buffer requests or fail with 503 while geocoder is loading
-    let geocoder = ReverseGeocoder::from_file(path);
-    GEOCODER.set(geocoder).ok();
 }
