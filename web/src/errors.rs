@@ -1,5 +1,7 @@
+use std::sync::{PoisonError, RwLockReadGuard};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
+use geocoder::ReverseGeocoder;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

@@ -1,10 +1,9 @@
-use crate::{AppState, Result};
+use crate::{Result, SharedState};
 use axum::extract::{Query, State};
-use axum::Json;
+use axum::{Json};
 use geocoder::City;
 use geojson::{Feature, GeoJson, Geometry, JsonObject, Value};
 use serde::Deserialize;
-use std::sync::Arc;
 
 #[derive(Deserialize)]
 pub struct GeocodeParameters {
@@ -15,10 +14,9 @@ pub struct GeocodeParameters {
 }
 
 pub async fn geocode(
-    State(state): State<Arc<AppState>>,
+    State(state): State<SharedState>,
     Query(pos): Query<GeocodeParameters>,
 ) -> Result<Json<Vec<GeoJson>>> {
-    let gc = &state.geocoder;
     let GeocodeParameters {
         lat,
         lng,
@@ -26,6 +24,7 @@ pub async fn geocode(
         results,
     } = pos;
 
+    let gc = state.read().expect(""); //TODO
     let results = gc.search(lat, lng, results.unwrap_or(1));
 
     let response = results
