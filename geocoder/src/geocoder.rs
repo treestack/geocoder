@@ -34,6 +34,7 @@ const EARTH_RADIUS_IN_KM: f32 = 6371.0;
 ///     modification_date: String::from("2022-08-04"),
 /// };
 /// ```
+#[rustfmt::skip]
 #[derive(Debug, Clone, Deserialize)]
 pub struct City {
     pub id: u32,                   // integer id of record in geonames database
@@ -53,14 +54,14 @@ pub struct City {
     pub population: Option<u32>,   // bigint (8 byte int)
     pub elevation: Option<i16>,    // in metres, integer
     pub dem: String,               // digital elevation model, srtm3 or gtopo30, average elevation of 3''x3'' (ca 90mx90m) or 30''x30'' (ca 900mx900m) area in metres, integer. srtm processed by cgiar/ciat.
-    pub timezone: String,          // the iana timezone id (see file timeZone.txt) varchar(40)
+    pub timezone: String,          // the IANA timezone id (see file timeZone.txt) varchar(40)
     pub modification_date: String, // date of last modification in yyyy-MM-dd format
 }
 
 impl City {
     /// Get coordinates as ECEF (x;y;z)-coordinates.
     pub fn as_xyz(&self) -> [f32; 3] {
-        degrees_lat_lng_to_unit_sphere(&self.latitude, &self.longitude)
+        degrees_lat_lng_to_unit_sphere(self.latitude, self.longitude)
     }
 }
 
@@ -74,6 +75,26 @@ impl Display for City {
 pub struct ReverseGeocoder {
     cities: Vec<City>,
     tree: KdTree<f32, usize, 3, 32, u16>,
+}
+
+impl Display for ReverseGeocoder {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "ReverseGeocoder<cities={}, tree={}>",
+            self.cities.len(),
+            self.tree.size()
+        )
+    }
+}
+
+impl Default for ReverseGeocoder {
+    fn default() -> Self {
+        Self {
+            tree: KdTree::with_capacity(0),
+            cities: vec![],
+        }
+    }
 }
 
 impl ReverseGeocoder {
@@ -124,9 +145,9 @@ impl ReverseGeocoder {
     ///
     /// # Example
     /// ```rust
-    /// let results = gc.search(&47.11, &8.15, &10);
+    /// let results = gc.search(47.11, 8.15, 10);
     /// ```
-    pub fn search(&self, lat: &f32, lng: &f32, results: &usize) -> Vec<(u32, &City)> {
+    pub fn search(&self, lat: f32, lng: f32, results: usize) -> Vec<(u32, &City)> {
         tracing::debug!(
             "Searching for {} cities closest to {};{}",
             results,
@@ -135,7 +156,7 @@ impl ReverseGeocoder {
         );
 
         let query = degrees_lat_lng_to_unit_sphere(lat, lng);
-        let results = self.tree.nearest_n(&query, *results, &squared_euclidean);
+        let results = self.tree.nearest_n(&query, results, &squared_euclidean);
         tracing::debug!("Found: {:?}", results);
         results
             .iter()
@@ -166,7 +187,7 @@ fn parse_csv_file<R: for<'de> serde::Deserialize<'de> + Display>(
 }
 
 /// Convert geodetic coordinates to ECEF coordinates
-fn degrees_lat_lng_to_unit_sphere(lat: &f32, lng: &f32) -> [f32; 3] {
+fn degrees_lat_lng_to_unit_sphere(lat: f32, lng: f32) -> [f32; 3] {
     let lat = lat.to_radians();
     let lng = lng.to_radians();
     [lat.cos() * lng.cos(), lat.cos() * lng.sin(), lat.sin()]
@@ -186,7 +207,7 @@ mod tests {
     #[traced_test]
     fn doesnt_find_anything_if_list_is_empty() {
         let gc = ReverseGeocoder::new(vec![]);
-        let result = gc.search(&50.93, &6.95, &1);
+        let result = gc.search(50.93, 6.95, 1);
         assert!(result.is_empty());
     }
 
@@ -194,7 +215,7 @@ mod tests {
     #[traced_test]
     fn finds_cologne() {
         let gc = ReverseGeocoder::from_file("../cities500.txt");
-        let (d, city) = gc.search(&50.88, &6.92, &1).first().unwrap().clone();
+        let (d, city) = gc.search(50.88, 6.92, 1).first().unwrap().clone();
         assert_eq!(city.id, 2886242);
         assert_eq!(d, 6);
         assert_eq!(format!("{}", city), "Köln, DE")

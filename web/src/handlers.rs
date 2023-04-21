@@ -1,9 +1,10 @@
-use crate::{Result, GEOCODER};
-use axum::extract::Query;
+use crate::{AppState, Result};
+use axum::extract::{Query, State};
 use axum::Json;
 use geocoder::City;
 use geojson::{Feature, GeoJson, Geometry, JsonObject, Value};
 use serde::Deserialize;
+use std::sync::Arc;
 
 #[derive(Deserialize)]
 pub struct GeocodeParameters {
@@ -13,13 +14,22 @@ pub struct GeocodeParameters {
     results: Option<usize>,
 }
 
-pub async fn geocode(Query(pos): Query<GeocodeParameters>) -> Result<Json<Vec<GeoJson>>> {
-    let gc = GEOCODER.get().unwrap();
-    let GeocodeParameters { lat, lng, details, results } = pos;
+pub async fn geocode(
+    State(state): State<Arc<AppState>>,
+    Query(pos): Query<GeocodeParameters>,
+) -> Result<Json<Vec<GeoJson>>> {
+    let gc = &state.geocoder;
+    let GeocodeParameters {
+        lat,
+        lng,
+        details,
+        results,
+    } = pos;
 
-    let results= gc.search(&lat, &lng, &results.unwrap_or(1));
+    let results = gc.search(lat, lng, results.unwrap_or(1));
 
-    let response = results.iter()
+    let response = results
+        .iter()
         .map(|(d, c)| to_feature(&c, *d, details.unwrap_or(false)))
         .collect();
 
@@ -33,7 +43,7 @@ fn to_feature(city: &City, distance: u32, include_details: bool) -> GeoJson {
 
     let mut properties = JsonObject::new();
     properties.insert(String::from("distanceToQuery"), distance.into());
-    
+
     if include_details {
         properties.insert(String::from("featureCode"), city.feature_code.into());
         properties.insert(String::from("countryCode"), city.country_code.into());
@@ -46,7 +56,10 @@ fn to_feature(city: &City, distance: u32, include_details: bool) -> GeoJson {
         properties.insert(String::from("elevation"), city.elevation.into());
         properties.insert(String::from("dem"), city.dem.into());
         properties.insert(String::from("timezone"), city.timezone.into());
-        properties.insert(String::from("modificationDate"), city.modification_date.into());
+        properties.insert(
+            String::from("modificationDate"),
+            city.modification_date.into(),
+        );
     }
 
     let mut foreign_members = JsonObject::new();
