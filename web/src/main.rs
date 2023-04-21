@@ -80,9 +80,11 @@ async fn main() {
     let mut watcher = notify::recommended_watcher(watcher_fn)
         .expect("Unable to initialize watcher");
 
-    match watcher.watch(&Path::new(&config.data_file), RecursiveMode::NonRecursive) {
-        Ok(()) => tracing::info!("Watching data file for changes"),
-        Err(e) => tracing::error!("Unable to watch data file: {}", e),
+    if config.watch_for_changes {
+        match watcher.watch(&Path::new(&config.data_file), RecursiveMode::NonRecursive) {
+            Ok(()) => tracing::info!("Watching data file for changes"),
+            Err(e) => tracing::error!("Unable to watch data file: {}", e),
+        }
     }
 
     // Rate limiter
