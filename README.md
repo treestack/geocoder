@@ -35,7 +35,10 @@ Download here: http://download.geonames.org/export/dump/cities500.zip and replac
 ## Build
 
     docker build -t treestack/geocoder:0 .
-    docker run -p 5353:5353 treestack/geocoder:0
+    docker run \
+        -p 5353:5353 \
+        -e GEOCODER_BIND_ADDRESS=0.0.0.0:5353 \
+        treestack/geocoder:0
 
 ## Usage
 
