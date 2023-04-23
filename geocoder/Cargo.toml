@@ -17,11 +17,11 @@ serde = "1.0.160"
 kiddo = "2.0.1"
 csv = "1.2.1"
 tracing = "0.1.37"
-tracing-test = "0.2.4"
 
 [dev-dependencies]
 rand = "0.8.5"
 criterion = "0.4.0"
+tracing-test = "0.2.4"
 
 [[bench]]
 name = "geocoder_bench"

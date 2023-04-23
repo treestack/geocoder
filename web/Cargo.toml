@@ -20,3 +20,7 @@ tracing-subscriber = { version = "0.3", features = ["json"] }
 dotenvy = "0.15"
 envy = "0.4"
 notify = "5.1"
+
+[dev-dependencies]
+tracing-test = "0.2.4"
+tokio-test = "0.4"

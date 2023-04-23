@@ -1,25 +1,27 @@
-use std::sync::{PoisonError, RwLockReadGuard};
-use axum::http::StatusCode;
+use axum::http::{header, StatusCode};
 use axum::response::{IntoResponse, Response};
-use geocoder::ReverseGeocoder;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("invalid configuration: {0}")]
     ConfigurationError(#[from] envy::Error),
+
+    #[error("please try again in a few seconds")]
+    LockError(), //TODO: #[from] TryLockError<RwLockReadGuard<'_, ReverseGeocoder>>
 }
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        let (status, body) = to_response_tuple(self);
-        (status, body).into_response()
-    }
-}
-
-#[allow(unreachable_patterns)]
-fn to_response_tuple(err: Error) -> (StatusCode, String) {
-    match err {
-        Error::ConfigurationError(_) => (StatusCode::NOT_FOUND, err.to_string()),
-        _ => (StatusCode::INTERNAL_SERVER_ERROR, err.to_string()),
+        match self {
+            Error::LockError() => (
+                StatusCode::SERVICE_UNAVAILABLE,
+                [(header::RETRY_AFTER, "30")],
+                self.to_string(),
+            ).into_response(),
+            _ => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                self
+            ).into_response(),
+        }
     }
 }

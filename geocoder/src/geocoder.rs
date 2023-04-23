@@ -35,7 +35,7 @@ const EARTH_RADIUS_IN_KM: f32 = 6371.0;
 /// };
 /// ```
 #[rustfmt::skip]
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 pub struct City {
     pub id: u32,                   // integer id of record in geonames database
     pub name: String,              // name of geographical point (utf8) varchar(200)
