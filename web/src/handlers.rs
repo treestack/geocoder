@@ -4,7 +4,6 @@ use axum::{Json};
 use geocoder::City;
 use geojson::{Feature, GeoJson, Geometry, JsonObject, Value};
 use serde::Deserialize;
-use crate::errors::Error::LockError;
 
 #[derive(Debug, Default, Deserialize)]
 pub struct GeocodeParameters {
@@ -24,8 +23,8 @@ pub async fn geocode(
         details,
         results,
     } = pos;
-    
-    let gc = state.try_read().map_err(|_| LockError())?; // TODO map in errors.rs
+
+    let gc = state.try_read()?;
     let results = gc.search(lat, lng, results.unwrap_or(1));
 
     let response = results
@@ -81,6 +80,7 @@ mod tests {
     use geocoder::ReverseGeocoder;
     use super::*;
     use tracing_test::traced_test;
+    use crate::errors::Error::LockError;
 
     fn test_city() -> City {
         City {

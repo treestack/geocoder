@@ -1,13 +1,20 @@
+use std::sync::TryLockError;
 use axum::http::{header, StatusCode};
 use axum::response::{IntoResponse, Response};
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, PartialEq, thiserror::Error)]
 pub enum Error {
     #[error("invalid configuration: {0}")]
     ConfigurationError(#[from] envy::Error),
 
     #[error("please try again in a few seconds")]
-    LockError(), //TODO: #[from] TryLockError<RwLockReadGuard<'_, ReverseGeocoder>>
+    LockError()
+}
+
+impl<R> From<TryLockError<R>> for Error {
+    fn from(_: TryLockError<R>) -> Self {
+        Error::LockError()
+    }
 }
 
 impl IntoResponse for Error {
