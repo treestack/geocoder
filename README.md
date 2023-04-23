@@ -20,11 +20,14 @@ With geonames' full dataset of ~200.000 cities, response time is fairly fast (me
 
 You can configure the application with the following environment variables:
 
-| Parameter    | Description    | Default         |
-|--------------|----------------|-----------------|
-| BIND_ADDRESS | Bind address   | 0.0.0.0:5353    |
-| LOGLEVEL     | Log level      | DEBUG           |
-| DATA_FILE    | Data file name | ./cities500.txt |
+| Parameter                  | Description                                                                                          | Default         |
+|----------------------------|------------------------------------------------------------------------------------------------------|-----------------|
+| GEOCODER_BIND_ADDRESS      | Bind address                                                                                         | 127.0.0.1:5353  |
+| GEOCODER_LOGLEVEL          | Log level                                                                                            | INFO            |
+| GEOCODER_DATA_FILE         | Data file name                                                                                       | ./cities500.txt |
+| GEOCODER_QUOTA_BURST_SIZE  | Rate limiter config, see [Governor docs](https://docs.rs/governor/latest/governor/struct.Quota.html) | 10              |
+| GEOCODER_QUOTA_INTERVAL    |                                                                                                      | 1000            |
+| GEOCODER_WATCH_FOR_CHANGES | Reload geocoder when data file changes.                                                              | true            |
 
 ## Requirements
 
