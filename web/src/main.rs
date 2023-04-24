@@ -6,7 +6,6 @@ mod middleware;
 use axum::error_handling::HandleErrorLayer;
 use axum::routing::get;
 use axum::{BoxError, Router};
-use dotenvy::dotenv;
 use notify::event::DataChange::Content;
 use notify::event::ModifyKind::Data;
 use notify::EventKind::Modify;
@@ -26,6 +25,8 @@ use crate::config::Configuration;
 use crate::errors::Error;
 use geocoder::ReverseGeocoder;
 
+pub static VERSION: &str = env!("CARGO_PKG_VERSION");
+
 type SharedState = Arc<RwLock<ReverseGeocoder>>;
 
 fn reload(state: &SharedState, file: &str) {
@@ -44,8 +45,6 @@ fn dump_environment() {
 
 #[tokio::main]
 async fn main() {
-    dotenv().expect(".env file not found");
-
     let config = Configuration::from_env().expect("Invalid configuration");
 
     // Initialize logger
@@ -54,7 +53,7 @@ async fn main() {
         .json()
         .init();
 
-    tracing::info!("Geocoder launched. Initializing now");
+    tracing::info!("Geocoder {} launched. Initializing now", VERSION);
 
     dump_environment();
 
