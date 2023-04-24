@@ -4,3 +4,6 @@ members = [
     "geocoder",
     "web"
 ]
+
+[workspace.package]
+version = "0.1.1"
