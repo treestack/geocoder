@@ -90,8 +90,8 @@ async fn main() {
     // Rate limiter
     let governor_conf = Box::new(
         GovernorConfigBuilder::default()
-            .per_millisecond(300)
-            .burst_size(10)
+            .per_millisecond(config.quota_interval)
+            .burst_size(config.quota_burst_size)
             .finish()
             .unwrap(),
     );
