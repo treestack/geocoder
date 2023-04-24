@@ -1,6 +1,7 @@
 mod config;
 mod errors;
 mod handlers;
+mod middleware;
 
 use axum::error_handling::HandleErrorLayer;
 use axum::routing::get;
@@ -88,6 +89,7 @@ async fn main() {
     }
 
     // Rate limiter
+    tracing::info!("Request rate is limited to {} req in {} ms", config.quota_burst_size, config.quota_interval);
     let governor_conf = Box::new(
         GovernorConfigBuilder::default()
             .per_millisecond(config.quota_interval)
@@ -103,6 +105,7 @@ async fn main() {
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
+                .layer(axum::middleware::from_fn(middleware::add_version))
                 .layer(HandleErrorLayer::new(|e: BoxError| async move {
                     display_error(e)
                 }))
