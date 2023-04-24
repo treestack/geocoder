@@ -1,5 +1,4 @@
 [workspace]
-
 members = [
     "geocoder",
     "web"
@@ -7,3 +6,6 @@ members = [
 
 [workspace.package]
 version = "0.1.1"
+authors = ["Christoph von Krüchten <cvk@treestack.de>"]
+description = "Reverse geocoder microservice"
+documentation = "https://github.com/treestack/geocoder"
