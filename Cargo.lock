@@ -2037,7 +2037,6 @@ dependencies = [
  "geocoder",
  "geojson",
  "notify",
- "once_cell",
  "serde",
  "serde_with",
  "thiserror",

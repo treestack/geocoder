@@ -30,7 +30,7 @@ fn default_bind_address() -> SocketAddr {
     SocketAddr::from(([127, 0, 0, 1], 5353))
 }
 fn default_data_file() -> String {
-    String::from("./cities500.txt")
+    String::from("./cities.txt")
 }
 fn default_quota_burst_size() -> u32 {
     10

@@ -6,14 +6,13 @@ edition = "2021"
 [dependencies]
 geocoder = { path = "../geocoder" }
 axum = { version = "0.6"}
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1.27", features = ["full"] }
 tower = { version = "0.4" }
 tower-http = { version = "0.4", features = ["trace"] }
 tower_governor = "0.0.4"
 serde = "1.0"
 serde_with = "2.3"
 thiserror = "1.0"
-once_cell = "1.17"
 geojson = "0.24"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json"] }
@@ -22,5 +21,5 @@ envy = "0.4"
 notify = "5.1"
 
 [dev-dependencies]
-tracing-test = "0.2.4"
+tracing-test = "0.2"
 tokio-test = "0.4"

@@ -122,11 +122,11 @@ impl ReverseGeocoder {
     /// Initialize ReverseGeocoder from a CSV file.
     ///
     /// Loads a CSV file into memory and initializes the GeoCoder with the contents.
-    /// Currently only supported format is http://www.geonames.org cities500.txt
+    /// Currently only supported format is http://www.geonames.org citiesX.txt
     ///
     /// # Example
     /// ```rust
-    /// let gc = geocoder::ReverseGeocoder::from_file("./cities500.txt");
+    /// let gc = geocoder::ReverseGeocoder::from_file("../cities.txt");
     /// ```
     pub fn from_file(csv_path: &str) -> ReverseGeocoder {
         let cities: Vec<City> = parse_csv_file(csv_path).expect("panic!");
@@ -145,6 +145,7 @@ impl ReverseGeocoder {
     ///
     /// # Example
     /// ```rust
+    /// # let gc = geocoder::ReverseGeocoder::from_file("../cities.txt");
     /// let results = gc.search(47.11, 8.15, 10);
     /// ```
     pub fn search(&self, lat: f32, lng: f32, results: usize) -> Vec<(u32, &City)> {
@@ -213,11 +214,11 @@ mod tests {
 
     #[test]
     #[traced_test]
-    fn finds_cologne() {
-        let gc = ReverseGeocoder::from_file("../cities500.txt");
+    fn finds_test_city() {
+        let gc = ReverseGeocoder::from_file("../cities.txt");
         let (d, city) = gc.search(50.88, 6.92, 1).first().unwrap().clone();
-        assert_eq!(city.id, 2886242);
-        assert_eq!(d, 6);
-        assert_eq!(format!("{}", city), "Köln, DE")
+        assert_eq!(city.id, 2929622);
+        assert_eq!(d, 47);
+        assert_eq!(format!("{}", city), "Erkelenz, DE")
     }
 }

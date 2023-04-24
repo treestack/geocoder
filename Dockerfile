@@ -17,6 +17,6 @@ RUN case ${TARGETPLATFORM:-linux/amd64} in \
 FROM scratch
 COPY --from=builder /usr/local/cargo/bin/web .
 COPY .env .
-COPY cities500.txt .
+COPY cities.txt .
 USER 1000
 CMD ["./web"]
