@@ -697,6 +697,7 @@ dependencies = [
  "kiddo",
  "rand",
  "serde",
+ "thiserror",
  "tracing",
  "tracing-test",
 ]

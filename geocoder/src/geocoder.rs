@@ -1,3 +1,5 @@
+mod errors;
+
 use std::fmt::{Display, Formatter};
 use std::fs::File;
 
@@ -172,19 +174,16 @@ impl ReverseGeocoder {
 }
 
 /// Parse CSV file into Vec of `R`.
-fn parse_csv_file<R: for<'de> serde::Deserialize<'de> + Display>(
-    filename: &str,
-) -> Result<Vec<R>, std::io::Error> {
+fn parse_csv_file<R: for<'de> serde::Deserialize<'de>>(filename: &str) -> errors::Result<Vec<R>> {
     tracing::debug!("Loading from file {}", filename);
     let file = File::open(filename)?;
     let mut reader = ReaderBuilder::new()
         .has_headers(false)
         .delimiter(b'\t')
         .from_reader(file);
-
-    let cities: Vec<R> = reader.deserialize().filter_map(Result::ok).collect();
-
-    Ok(cities)
+    let records = reader.deserialize()
+        .collect::<Result<Vec<R>, _>>()?;
+    Ok(records)
 }
 
 /// Convert geodetic coordinates to ECEF coordinates
