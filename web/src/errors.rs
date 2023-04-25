@@ -1,6 +1,6 @@
-use std::sync::TryLockError;
 use axum::http::{header, StatusCode};
 use axum::response::{IntoResponse, Response};
+use std::sync::TryLockError;
 
 #[derive(Debug, PartialEq, thiserror::Error)]
 pub enum Error {
@@ -8,7 +8,7 @@ pub enum Error {
     ConfigurationError(#[from] envy::Error),
 
     #[error("please try again in a few seconds")]
-    LockError()
+    LockError(),
 }
 
 impl<R> From<TryLockError<R>> for Error {
@@ -24,11 +24,9 @@ impl IntoResponse for Error {
                 StatusCode::SERVICE_UNAVAILABLE,
                 [(header::RETRY_AFTER, "30")],
                 self.to_string(),
-            ).into_response(),
-            _ => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                self
-            ).into_response(),
+            )
+                .into_response(),
+            _ => (StatusCode::INTERNAL_SERVER_ERROR, self).into_response(),
         }
     }
 }

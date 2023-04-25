@@ -181,8 +181,7 @@ fn parse_csv_file<R: for<'de> serde::Deserialize<'de>>(filename: &str) -> errors
         .has_headers(false)
         .delimiter(b'\t')
         .from_reader(file);
-    let records = reader.deserialize()
-        .collect::<Result<Vec<R>, _>>()?;
+    let records = reader.deserialize().collect::<Result<Vec<R>, _>>()?;
     Ok(records)
 }
 

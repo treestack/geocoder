@@ -67,15 +67,15 @@ async fn main() {
         tracing::debug!("Received watcher event: {:?}", res);
         match res {
             Ok(Event {
-                   kind: Modify(Data(Content)),
-                   ..
-               }) => reload(&my_state, &df),
+                kind: Modify(Data(Content)),
+                ..
+            }) => reload(&my_state, &df),
             _ => (),
         }
     };
 
-    let mut watcher = notify::recommended_watcher(watcher_fn)
-        .expect("Unable to initialize watcher");
+    let mut watcher =
+        notify::recommended_watcher(watcher_fn).expect("Unable to initialize watcher");
 
     if config.watch_for_changes {
         match watcher.watch(&Path::new(&config.data_file), RecursiveMode::NonRecursive) {
@@ -91,7 +91,7 @@ async fn main() {
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
-                .layer(axum::middleware::from_fn(middleware::add_version))
+                .layer(axum::middleware::from_fn(middleware::add_version)),
         );
 
     // Start the server

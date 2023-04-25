@@ -1,6 +1,6 @@
 use crate::{Result, SharedState};
 use axum::extract::{Query, State};
-use axum::{Json};
+use axum::Json;
 use geocoder::City;
 use geojson::{Feature, GeoJson, Geometry, JsonObject, Value};
 use serde::Deserialize;
@@ -76,11 +76,11 @@ fn to_feature(city: &City, distance: u32, include_details: bool) -> GeoJson {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, RwLock};
-    use geocoder::ReverseGeocoder;
     use super::*;
-    use tracing_test::traced_test;
     use crate::errors::Error::LockError;
+    use geocoder::ReverseGeocoder;
+    use std::sync::{Arc, RwLock};
+    use tracing_test::traced_test;
 
     fn test_city() -> City {
         City {
@@ -109,15 +109,14 @@ mod tests {
     #[test]
     #[traced_test]
     fn returns_error_when_geocoder_busy() {
-        let state = Arc::new(
-            RwLock::new(ReverseGeocoder::default())
-        );
+        let state = Arc::new(RwLock::new(ReverseGeocoder::default()));
 
         let _lock = state.write().unwrap();
 
-        let result = tokio_test::block_on(
-            geocode(State(state.clone()), Query(GeocodeParameters::default()))
-        );
+        let result = tokio_test::block_on(geocode(
+            State(state.clone()),
+            Query(GeocodeParameters::default()),
+        ));
 
         assert_eq!(LockError(), result.unwrap_err());
     }
@@ -127,16 +126,10 @@ mod tests {
     #[traced_test]
     fn returns_cities_without_details() {
         let erkelenz: City = test_city();
-        let state = Arc::new(
-            RwLock::new(
-                ReverseGeocoder::new(vec![erkelenz.clone()])
-            )
-        );
+        let state = Arc::new(RwLock::new(ReverseGeocoder::new(vec![erkelenz.clone()])));
         let query = GeocodeParameters::default();
 
-        let result = tokio_test::block_on(
-            geocode(State(state), Query(query))
-        ).unwrap();
+        let result = tokio_test::block_on(geocode(State(state), Query(query))).unwrap();
 
         let city = result.0.first().unwrap();
         let expected = to_feature(&erkelenz, 5511, false);
