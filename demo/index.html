@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Display a map on a webpage</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiY3ZrLXRyZWVzdGFjayIsImEiOiJjbGd3ZzhzY2EwZGJuM2VwbGNxaTR3bWw4In0.IfeUaVXahoZ7HiIAHnnNHw';
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [30.2, 31.0],
+        zoom: 6
+    });
+
+    map.on('load', () => {
+        map.addSource('places', {
+            type: 'geojson',
+            data: {
+                'type': 'FeatureCollection',
+                'features': []
+            }
+        });
+
+        map.addLayer({
+            'id': 'places',
+            'type': 'symbol',
+            'source': 'places',
+            'layout': {
+                'icon-image': 'custom-marker',
+                'icon-allow-overlap': true,
+                'text-field': ['get', 'title'],
+                'text-offset': [0, 1.25],
+                'text-anchor': 'top'
+            }
+        });
+
+        map.addLayer({
+            'id': 'lines',
+            'type': 'line',
+            'source': 'places',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#f00',
+                'line-width': 2
+            }
+        });
+
+        map.loadImage(
+            'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
+            (error, image) => {
+                if (error) throw error;
+                map.addImage('custom-marker', image);
+            });
+
+        map.on('click', (e) => {
+
+            const {
+                lng,
+                lat
+            } = e.lngLat;
+            fetch(`http://localhost:5353?lat=${lat}&lng=${lng}&results=10`, {
+                method: 'GET'
+            })
+                .then(r => r.json())
+                .then(data => {
+                    map.getSource('places').setData(addLines([lng, lat], data));
+                });
+        });
+    })
+
+    const addLines = (lngLat, featureCollection) => {
+        const lines = featureCollection.features.map(f => ({
+            'type': 'Feature',
+            'geometry': {
+                'type': 'LineString',
+                'coordinates': [
+                    lngLat,
+                    f.geometry.coordinates
+                ]
+            }
+        }));
+        featureCollection.features.push(...lines);
+        return featureCollection;
+    };
+</script>
+
+</body>
+</html>
