@@ -16,9 +16,6 @@ use std::path::Path;
 use std::sync::{Arc, RwLock};
 use tokio::signal;
 use tower::ServiceBuilder;
-use tower_governor::errors::display_error;
-use tower_governor::governor::GovernorConfigBuilder;
-use tower_governor::GovernorLayer;
 use tower_http::trace::TraceLayer;
 
 use crate::config::Configuration;
@@ -87,16 +84,6 @@ async fn main() {
         }
     }
 
-    // Rate limiter
-    tracing::info!("Request rate is limited to {} req in {} ms", config.quota_burst_size, config.quota_interval);
-    let governor_conf = Box::new(
-        GovernorConfigBuilder::default()
-            .per_millisecond(config.quota_interval)
-            .burst_size(config.quota_burst_size)
-            .finish()
-            .unwrap(),
-    );
-
     // Configure routes
     let app = Router::new()
         .route("/", get(handlers::geocode))
@@ -105,12 +92,6 @@ async fn main() {
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
                 .layer(axum::middleware::from_fn(middleware::add_version))
-                .layer(HandleErrorLayer::new(|e: BoxError| async move {
-                    display_error(e)
-                }))
-                .layer(GovernorLayer {
-                    config: Box::leak(governor_conf),
-                }),
         );
 
     // Start the server
