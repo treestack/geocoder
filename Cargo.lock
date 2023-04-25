@@ -599,7 +599,7 @@ dependencies = [
 
 [[package]]
 name = "geocoder"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "criterion",
  "csv",
@@ -1834,7 +1834,7 @@ checksum = "0046fef7e28c3804e5e38bfa31ea2a0f73905319b677e57ebe37e49358989b5d"
 
 [[package]]
 name = "web"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "axum",
  "envy",
