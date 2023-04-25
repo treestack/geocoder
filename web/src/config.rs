@@ -15,12 +15,10 @@ pub struct Configuration {
     pub bind_address: SocketAddr,
     #[serde(default = "default_data_file")]
     pub data_file: String,
-    #[serde(default = "default_quota_burst_size")]
-    pub quota_burst_size: u32,
-    #[serde(default = "default_quota_interval")]
-    pub quota_interval: u64,
     #[serde(default = "default_watch_for_changes")]
     pub watch_for_changes: bool,
+    #[serde(default = "default_allow_origin")]
+    pub allow_origin: String,
 }
 
 fn default_loglevel() -> Level {
@@ -32,14 +30,11 @@ fn default_bind_address() -> SocketAddr {
 fn default_data_file() -> String {
     String::from("./cities.txt")
 }
-fn default_quota_burst_size() -> u32 {
-    10
-}
-fn default_quota_interval() -> u64 {
-    1000
-}
 fn default_watch_for_changes() -> bool {
     true
+}
+fn default_allow_origin() -> String {
+    return String::from("*");
 }
 
 impl Configuration {

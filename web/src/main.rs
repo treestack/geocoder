@@ -3,9 +3,9 @@ mod errors;
 mod handlers;
 mod middleware;
 
-use axum::error_handling::HandleErrorLayer;
+use axum::http::Method;
 use axum::routing::get;
-use axum::{BoxError, Router};
+use axum::Router;
 use notify::event::DataChange::Content;
 use notify::event::ModifyKind::Data;
 use notify::EventKind::Modify;
@@ -16,6 +16,7 @@ use std::path::Path;
 use std::sync::{Arc, RwLock};
 use tokio::signal;
 use tower::ServiceBuilder;
+use tower_http::cors::{AllowOrigin, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 use crate::config::Configuration;
@@ -84,6 +85,15 @@ async fn main() {
         }
     }
 
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET])
+        .allow_origin(
+            AllowOrigin::exact(
+                config.allow_origin.parse()
+                    .expect("Invalid CORS configuration")
+            )
+        );
+
     // Configure routes
     let app = Router::new()
         .route("/", get(handlers::geocode))
@@ -91,7 +101,8 @@ async fn main() {
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
-                .layer(axum::middleware::from_fn(middleware::add_version)),
+                .layer(axum::middleware::from_fn(middleware::add_version))
+                .layer(cors),
         );
 
     // Start the server

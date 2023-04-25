@@ -11,7 +11,7 @@ geocoder = { path = "../geocoder" }
 axum = { version = "0.6"}
 tokio = { version = "1.27", features = ["full"] }
 tower = { version = "0.4" }
-tower-http = { version = "0.4", features = ["trace"] }
+tower-http = { version = "0.4", features = ["trace", "cors"] }
 serde = "1.0"
 serde_with = "2.3"
 thiserror = "1.0"
