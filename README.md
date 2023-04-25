@@ -40,16 +40,24 @@ If you require less accuracy and/or have limited resources, you can download any
         volumes:
           - "./cities500.txt:/cities.txt"
 
+### Run with Kubernetes (experimental)
+
+There's a helm chart in the `deploy` directory, but it's haphazardly stitched together. 
+Please feel free to create a PR if you have any suggestions.
+
+    helm install <name> deploy 
+
 ## Configuration
 
 You can configure the application with the following environment variables:
 
-| Parameter                  | Description                                                                                          | Default        |
-|----------------------------|------------------------------------------------------------------------------------------------------|----------------|
-| GEOCODER_BIND_ADDRESS      | Bind address                                                                                         | 127.0.0.1:5353 |
-| GEOCODER_LOGLEVEL          | Log level                                                                                            | INFO           |
-| GEOCODER_DATA_FILE         | Data file name                                                                                       | ./cities.txt   |
-| GEOCODER_WATCH_FOR_CHANGES | Reload geocoder when data file changes.                                                              | true           |
+| Parameter                  | Description                             | Default        |
+|----------------------------|-----------------------------------------|----------------|
+| GEOCODER_BIND_ADDRESS      | Bind address                            | 127.0.0.1:5353 |
+| GEOCODER_LOGLEVEL          | Log level                               | INFO           |
+| GEOCODER_DATA_FILE         | Data file name                          | ./cities.txt   |
+| GEOCODER_WATCH_FOR_CHANGES | Reload geocoder when data file changes. | true           |
+| GEOCODER_ALLOW_ORIGIN      | CORS Access-Control-Allow-Origin header | *              |
 
 ## Usage
 
@@ -61,74 +69,83 @@ You can configure the application with the following environment variables:
 
 The microservice listens to all GET requests and supports the following query parameters:
 
-| Parameter | Description                                             | Required | Example  |
-|-----------|---------------------------------------------------------|----------|----------|
-| **lat**   | Latitude (WGS84, decimal)                               | Yes      | -48.875  |
-| **lng**   | Longitude (WGS84, decimal)                              | Yes      | -123.392 |
-| results   | Number of results, integer, defaults to 1               | No       | 10       |
-| details   | Include details in response, boolean, defaults to false | No       | true     |
+| Parameter | Description                                               | Required | Example  |
+|-----------|-----------------------------------------------------------|----------|----------|
+| **lat**   | Latitude (WGS84, decimal)                                 | Yes      | -48.875  |
+| **lng**   | Longitude (WGS84, decimal)                                | Yes      | -123.392 |
+| results   | Number of results, integer, defaults to `1`               | No       | 10       |
+| details   | Include details in response, boolean, defaults to `false` | No       | true     |
 
 ### Response
 
-The response is valid GeoJSON, `id` and `name` are added as [foreign members](https://www.rfc-editor.org/rfc/rfc7946#section-6.1). The additional properties always includes the distance to the given coordinates and optionally most columns from the geonames dataset:
+The response is a valid GeoJSON `FeatureCollection`. The feature's `id` is added as [foreign members](https://www.rfc-editor.org/rfc/rfc7946#section-6.1). 
+The additional properties always includes the 'title' and distance to the given coordinates. 
+Optionally you can add most columns from the geonames dataset by setting the `details` parameter to `true`:
 
-| Property         | Description                                                                                     |  
-|------------------|-------------------------------------------------------------------------------------------------|
-| distanceToQuery  | Approx. distance to given coordinates in kilometres (assuming earth radius of exactly 6371 km). |
-| admin1Code       |                                                                                                 |
-| admin2Code       |                                                                                                 |
-| admin3Code       |                                                                                                 |
-| admin4Code       |                                                                                                 |
-| countryCode      | ISO-3166 2-letter country code                                                                  |
-| cc2              | alternative country codes                                                                       |
-| dem              | digital elevation model, srtm3 or gtopo30                                                       |
-| elevation        | elevation in metres                                                                             |
-| featureCode      | Feature code. For a complete list, check [here](http://www.geonames.org/export/codes.html).     |
-| modificationDate | Last modification date                                                                          |
-| population       | Population                                                                                      |
-| timezone         | IANA timezone id                                                                                |
+| Property            | Description                                                                                     |  
+|---------------------|-------------------------------------------------------------------------------------------------|
+| **title**           | The city's name                                                                                 |
+| **distanceToQuery** | Approx. distance to given coordinates in kilometres (assuming earth radius of exactly 6371 km). |
+| admin1Code          |                                                                                                 |
+| admin2Code          |                                                                                                 |
+| admin3Code          |                                                                                                 |
+| admin4Code          |                                                                                                 |
+| countryCode         | ISO-3166 2-letter country code                                                                  |
+| cc2                 | alternative country codes                                                                       |
+| dem                 | digital elevation model, srtm3 or gtopo30                                                       |
+| elevation           | elevation in metres                                                                             |
+| featureCode         | Feature code. For a complete list, check [here](http://www.geonames.org/export/codes.html).     |
+| modificationDate    | Last modification date                                                                          |
+| population          | Population                                                                                      |
+| timezone            | IANA timezone id                                                                                |
 
 #### Example
 
-    [
-        {
-            "geometry": {
-                "coordinates": [
-                    31.075550079345703,
-                    -18.012739181518555
-                ],
-                "type": "Point"
-            },
-            "id": 1106542,
-            "name": "Chitungwiza",
-            "properties": {
-                "admin1Code": "10",
-                "admin2Code": "",
-                "admin3Code": "",
-                "admin4Code": "",
-                "cc2": "",
-                "countryCode": "ZW",
-                "dem": "1435",
-                "distanceToQuery": 10396,
-                "elevation": null,
-                "featureCode": "PPL",
-                "modificationDate": "2022-10-05",
-                "population": 371244,
-                "timezone": "Africa/Harare"
-            },
-            "type": "Feature"
-        }
-    ]
+	{
+		"type": "FeatureCollection",
+		"features": [
+			{
+				"geometry": {
+					"coordinates": [
+						78.25628662109375,
+						28.95911979675293
+					],
+					"type": "Point"
+				},
+				"id": 1272983,
+				"properties": {
+					"distanceToQuery": 6,
+					"title": "Dhanaura"
+				},
+				"type": "Feature"
+			},
+			{
+				"geometry": {
+					"coordinates": [
+						78.23455810546875,
+						28.92694091796875
+					],
+					"type": "Point"
+				},
+				"id": 1278036,
+				"properties": {
+					"distanceToQuery": 8,
+					"title": "Bachhraon"
+				},
+				"type": "Feature"
+			}
+		]
+	}
 
 ## Resource use and Performance
 
 The final docker image has a size of only 8 MB, memory usage depends on the used data set:
 
-| Dataset         | Cities  | MEM USAGE  |
-|-----------------|---------|------------|
-| cities500.txt   | 199,606 | 156.9MiB   |
-| cities5000.txt  | 53,268  | 44.44MiB   |
-| cities15000.txt | 26,457  | 23.42MiB   |
+| Dataset         | Cities  | Approx. mem. usage |
+|-----------------|---------|--------------------|
+| cities500.txt   | 199,606 | ~160 MiB           |
+| cities5000.txt  | 53,268  | ~45 MiB            |
+| cities15000.txt | 26,457  | ~25 MiB            |
 
 With `cities500.txt`, response time is consistently < 10 ms, measured on a M1 mac:
 
