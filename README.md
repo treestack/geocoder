@@ -1,4 +1,6 @@
 [![Docker](https://github.com/treestack/geocoder/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/treestack/geocoder/actions/workflows/docker-publish.yml)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/treestack/geocoder/docker-publish.yml)
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/treestack/geocoder)
 
 # Reverse Geocoder
 
