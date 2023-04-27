@@ -56,8 +56,10 @@ You can configure the application with the following environment variables:
 | GEOCODER_BIND_ADDRESS      | Bind address                            | 127.0.0.1:5353 |
 | GEOCODER_LOGLEVEL          | Log level                               | INFO           |
 | GEOCODER_DATA_FILE         | Data file name                          | ./cities.txt   |
-| GEOCODER_WATCH_FOR_CHANGES | Reload geocoder when data file changes. | true           |
+| GEOCODER_WATCH_FOR_CHANGES | Reload geocoder when data file changes* | true           |
 | GEOCODER_ALLOW_ORIGIN      | CORS Access-Control-Allow-Origin header | *              |
+
+\* Incredibly unreliable when the datafile is mounted as a docker volume.
 
 ## Usage
 
