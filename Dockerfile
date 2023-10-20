@@ -1,7 +1,7 @@
 FROM rust:1.69-alpine as chef
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 RUN apk add --no-cache musl-dev
-RUN cargo install cargo-chef
+RUN cargo install cargo-chef --locked
 WORKDIR app
 
 FROM chef AS planner
@@ -21,8 +21,8 @@ RUN case ${TARGETPLATFORM:-linux/amd64} in \
     *)                exit 1;; esac \
     && echo "TARGET=$TARGET" \
     && rustup target add ${TARGET}  \
-    && cargo build --release --target ${TARGET}
-RUN cargo install --path web
+    && cargo build --locked --release --target ${TARGET}
+RUN cargo install --locked --path web
 
 FROM scratch
 COPY --from=builder /usr/local/cargo/bin/web .
