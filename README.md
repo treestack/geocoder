@@ -1,7 +1,3 @@
-[![Docker](https://github.com/treestack/geocoder/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/treestack/geocoder/actions/workflows/docker-publish.yml)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/treestack/geocoder/docker-publish.yml)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/treestack/geocoder)
-
 # Reverse Geocoder
 
 This is a simple and very lightweight reverse geocoder for offline use. It's implemented in Rust and uses a k-d-tree to find the closest cities for a given coordinate.
